@@ -65,7 +65,7 @@ var incomingBikeSchema = {
 };
 
 var app = express();
-app.use(requestIDParser);
+// app.use(requestIDParser);
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 
@@ -96,7 +96,7 @@ app.get('/api/availableBikes', function (req, res) {
     
     var query = {};
     // BUG! Uncomment code to fix :)
-    // query = { available: true };
+    query = { available: true };
 
     // Add user filter conditions
     for (var queryParam in req.query) {
@@ -301,7 +301,7 @@ function processReservation(res, bikeId, changeTo, requestID) {
         return;
     }
 
-    mongoDB.collection(mongoDBCollection).updateOne({ _id: new ObjectId(bikeId), available: !changeTo }, { $set: { available: changeTo } }, function(err, result) {
+    mongoDB.collection(mongoDBCollection).updateOne({ _id: new ObjectId(bikeId) }, { $set: { available: changeTo } }, function(err, result) {
         if (err) {
             dbError(res, err, requestID);
             return;
@@ -319,7 +319,7 @@ function processReservation(res, bikeId, changeTo, requestID) {
                 }
                 else {
                     // Invalid reservation request
-                    res.status(400).send('Invalid reservation request was made for BikeId ' + bikeId);
+                    // res.status(400).send('Invalid reservation request was made for BikeId ' + bikeId);
                 }
             });
             
@@ -332,7 +332,7 @@ function processReservation(res, bikeId, changeTo, requestID) {
             return;
         }
 
-        res.sendStatus(200);
+        // res.sendStatus(200);
     });
 }
 
@@ -345,8 +345,26 @@ function dbError(res, err, requestID) {
     res.status(500).send(err);
 }
 
+// for demo, to manually set bikes as available/unavailable
+app.patch('/updatebikes', function(req, res) {
+    if (req.query.available) {
+        var available = req.query.available === 'true' ? true : false;
+        processReservation(res, "5ccb3b61a320420018cd856f", available, null);
+        processReservation(res, "5ccb3b61a320420018cd856e", available, null);
+        processReservation(res, "5ccb3b61a320420018cd8573", available, null);
+        processReservation(res, "5ccb3b62a320420018cd8577", available, null);
+        processReservation(res, "5ccb3b62a320420018cd8575", available, null);
+        res.status(200).send(`set bike availability to ${available}\n`);
+        return;
+    }
+    res.status(404).send("expecting something like: /updatebikes?available=false\n");
+});
+
+
+
 app.get('/hello', function(req, res) {
-    res.status(200).send('hello!\n');
+    var extramsg = "With this version of bikes, you can send something like: /updatebikes?available=false\n";
+    res.status(200).send(`hello from bike! ${extramsg}\n`);
 });
 
 // start server ------------------------------------------------------------
