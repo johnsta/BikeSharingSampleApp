@@ -354,6 +354,8 @@ app.patch('/updatebikes', function(req, res) {
         processReservation(res, "5ccb3b61a320420018cd8573", available, null);
         processReservation(res, "5ccb3b62a320420018cd8577", available, null);
         processReservation(res, "5ccb3b62a320420018cd8575", available, null);
+        processReservation(res, "5ccb3b61a320420018cd8571", available, null);
+        processReservation(res, "5ccb3b62a320420018cd8578", available, null);
         res.status(200).send(`set bike availability to ${available}\n`);
         return;
     }
