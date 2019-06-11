@@ -65,7 +65,7 @@ var incomingBikeSchema = {
 };
 
 var app = express();
-app.use(requestIDParser);
+//app.use(requestIDParser);
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 
